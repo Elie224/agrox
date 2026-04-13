@@ -99,6 +99,7 @@ function niveauSolLisible(niveau) {
   const map = {
     excellent: "excellent",
     tres_bon_avec_amelioration: "très bon avec amélioration possible",
+    tres_bon_avec_ajustements: "très bon (avec ajustements)",
     bon: "bon",
     moyen: "moyen",
     faible: "faible",
@@ -173,6 +174,8 @@ function renderResult(data, isError = false) {
     : "-";
   const meteo = formatWeatherContext(data.contexte_meteo);
   const motifDecision = corrigerTexteFrancais(data.motif_decision || "-");
+  const graviteProbleme = corrigerTexteFrancais(data.gravite_probleme || "faible");
+  const alertePrincipale = corrigerTexteFrancais(data.alerte_principale || "Aucune alerte majeure");
   const modeResponsable = Boolean(data.mode_responsable);
   const avisResponsable = corrigerTexteFrancais(data.avis_responsable || "-");
   const motifsResponsables = Array.isArray(data.motifs_responsable) && data.motifs_responsable.length > 0
@@ -183,8 +186,11 @@ function renderResult(data, isError = false) {
     : "";
 
   let conclusion = "Sol à risque: amélioration nécessaire avant culture intensive.";
+  const stressHydrique = raisons.toLowerCase().includes("stress hydrique");
   if (data.prediction === "favorable" && !modeResponsable) {
-    if ((data.niveau_sol || "") === "tres_bon_avec_amelioration") {
+    if (stressHydrique) {
+      conclusion = "Sol très favorable à l'agriculture, mais un stress hydrique est probable. Une stratégie d'irrigation est recommandée.";
+    } else if ((data.niveau_sol || "") === "tres_bon_avec_amelioration" || (data.niveau_sol || "") === "tres_bon_avec_ajustements") {
       conclusion = "Sol très favorable, avec une amélioration recommandée pour optimiser le rendement.";
     } else {
       conclusion = "Sol exploitable: vous pouvez démarrer, avec suivi des nutriments.";
@@ -215,6 +221,7 @@ function renderResult(data, isError = false) {
     <div class="result-summary"><strong>Conclusion:</strong> ${conclusion}</div>
     <div class="result-summary"><strong>Prochain geste conseillé:</strong> ${prochainGeste}</div>
     <div class="result-summary"><strong>Motif de la décision:</strong> ${motifDecision}</div>
+    <div class="result-summary"><strong>Alerte principale:</strong> ${alertePrincipale} (gravité: <strong>${graviteProbleme}</strong>)</div>
     <div class="result-summary"><strong>Avis responsable:</strong> ${avisResponsable}</div>
     <div class="result-summary"><strong>Motifs de prudence:</strong> ${motifsResponsables}</div>
     <div class="result-details-grid">

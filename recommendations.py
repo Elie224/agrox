@@ -127,6 +127,15 @@ def build_decision_support(prediction, confidence, data):
         soil_score = min(soil_score, 74.0)
     soil_level = classify_soil_score(soil_score)
 
+    has_operational_constraint = any(
+        keyword in str(reason).lower()
+        for reason in reasons
+        for keyword in ["stress hydrique", "humidite trop elevee", "drainage", "asphyxie", "salin", "hydromorphe"]
+    )
+    if has_operational_constraint and soil_score >= 90.0:
+        soil_score = min(soil_score, 89.0)
+        soil_level = "tres_bon_avec_ajustements"
+
     # Un sol "excellent" ne doit pas masquer une carence explicite.
     lower_reasons = [str(reason).lower() for reason in reasons]
     has_deficiency = any(
@@ -135,8 +144,10 @@ def build_decision_support(prediction, confidence, data):
         for keyword in ["faible", "insuffisant", "carence"]
     )
     if has_deficiency and soil_level == "excellent":
-        soil_level = "tres_bon_avec_amelioration"
+        soil_level = "tres_bon_avec_ajustements"
         soil_score = min(soil_score, 92.0)
+
+    gravite_probleme, alerte_principale = assess_issue_severity(reasons)
 
     return {
         "cultures_recommandees": cultures,
@@ -148,7 +159,31 @@ def build_decision_support(prediction, confidence, data):
         "soil_level": soil_level,
         "decision_finale": decision_finale,
         "motif_decision": motif_decision,
+        "gravite_probleme": gravite_probleme,
+        "alerte_principale": alerte_principale,
     }
+
+
+def assess_issue_severity(reasons):
+    rank = {"faible": 0, "modere": 1, "important": 2, "critique": 3}
+    detected = "faible"
+    alerte = "Aucune alerte majeure"
+
+    for reason in reasons:
+        text = str(reason).lower()
+        sev = "faible"
+        if "stress hydrique" in text:
+            sev = "modere"
+        if "trop eleve" in text or "desequilibre" in text or "salinite" in text:
+            sev = "important"
+        if "insuffisant" in text or "faible" in text or "carence" in text or "hydromorphe" in text or "salin" in text:
+            sev = "critique"
+
+        if rank[sev] >= rank[detected]:
+            detected = sev
+            alerte = reason
+
+    return detected, alerte
 
 
 def compute_final_decision(prediction, confidence, data):
@@ -267,12 +302,12 @@ def compute_soil_score(data, prediction, confidence):
 
 
 def classify_soil_score(score):
-    if score >= 85:
+    if score >= 90:
         return "excellent"
-    if score >= 70:
+    if score >= 75:
+        return "tres_bon_avec_ajustements"
+    if score >= 60:
         return "bon"
-    if score >= 55:
+    if score >= 45:
         return "moyen"
-    if score >= 40:
-        return "faible"
-    return "critique"
+    return "faible"
