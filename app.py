@@ -329,6 +329,47 @@ def apply_decision_uncertainty(support, confidence):
         support["prediction_incertaine"] = False
 
 
+def apply_responsible_mode(prediction_affichage, decision_finale, support, confidence, anomalies):
+    motifs = []
+    if anomalies:
+        motifs.append("Donnees d'entree atypiques")
+    if float(confidence) < 65.0:
+        motifs.append("Confiance operationnelle insuffisante")
+    if support.get("niveau_incertitude") in {"elevee", "moyenne"}:
+        motifs.append("Incertitude predictive notable")
+
+    if not motifs:
+        return prediction_affichage, decision_finale, support, {
+            "active": False,
+            "message": "Aucun risque majeur detecte, decision automatisable.",
+            "motifs": [],
+        }
+
+    support["decision_finale"] = "a_verifier"
+    support["motif_decision"] = "Mode responsable active: verification humaine requise"
+    support["prediction_incertaine"] = True
+    support["niveau_incertitude"] = "elevee"
+    support["cultures_recommandees"] = ["Validation terrain par un agronome recommandee"]
+
+    safe_actions = [
+        "Verifier les mesures (capteurs / prelevement)",
+        "Confirmer la decision avec un conseiller agronome",
+        "Lancer un essai sur petite parcelle avant generalisation",
+    ]
+    existing_actions = support.get("actions_recommandees") or []
+    merged_actions = []
+    for action in safe_actions + existing_actions:
+        if action not in merged_actions:
+            merged_actions.append(action)
+    support["actions_recommandees"] = merged_actions
+
+    return "a_verifier", "a_verifier", support, {
+        "active": True,
+        "message": "Mode prudent active: ne pas appliquer automatiquement sans verification humaine.",
+        "motifs": motifs,
+    }
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -440,6 +481,13 @@ def predict():
     prediction_affichage = "a_verifier" if decision_finale == "a_verifier" else decision_finale
     confiance_decision = adjust_decision_confidence(confidence, prediction, decision_finale, anomalies)
     apply_decision_uncertainty(support, confiance_decision)
+    prediction_affichage, decision_finale, support, avis_responsable = apply_responsible_mode(
+        prediction_affichage,
+        decision_finale,
+        support,
+        confiance_decision,
+        anomalies,
+    )
 
     save_history(input_data, prediction_affichage, confiance_decision)
 
@@ -460,6 +508,9 @@ def predict():
             "niveau_sol": support["soil_level"],
             "donnees_suspectes": len(anomalies) > 0,
             "anomalies": anomalies,
+            "mode_responsable": avis_responsable["active"],
+            "avis_responsable": avis_responsable["message"],
+            "motifs_responsable": avis_responsable["motifs"],
             "explication_locale": explain,
             "contexte_meteo": meteo,
         }
@@ -520,6 +571,13 @@ def predict_batch():
         confiance_decision = adjust_decision_confidence(confidence, prediction, decision_finale, anomalies)
 
         apply_decision_uncertainty(support, confiance_decision)
+        prediction_affichage, decision_finale, support, avis_responsable = apply_responsible_mode(
+            prediction_affichage,
+            decision_finale,
+            support,
+            confiance_decision,
+            anomalies,
+        )
 
         save_history(enriched_input, prediction_affichage, confiance_decision)
 
@@ -536,6 +594,9 @@ def predict_batch():
                 "niveau_sol": support["soil_level"],
                 "donnees_suspectes": len(anomalies) > 0,
                 "anomalies": " | ".join(anomalies),
+                "mode_responsable": avis_responsable["active"],
+                "avis_responsable": avis_responsable["message"],
+                "motifs_responsable": " | ".join(avis_responsable["motifs"]),
                 "statut": "ok",
                 "erreur": "",
             }

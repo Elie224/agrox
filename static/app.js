@@ -132,8 +132,16 @@ function renderResult(data, isError = false) {
     : "-";
   const meteo = formatWeatherContext(data.contexte_meteo);
   const motifDecision = corrigerTexteFrancais(data.motif_decision || "-");
+  const modeResponsable = Boolean(data.mode_responsable);
+  const avisResponsable = corrigerTexteFrancais(data.avis_responsable || "-");
+  const motifsResponsables = Array.isArray(data.motifs_responsable) && data.motifs_responsable.length > 0
+    ? data.motifs_responsable.map((item) => corrigerTexteFrancais(item)).join(" | ")
+    : "Aucun";
+  const badgeResponsable = modeResponsable
+    ? '<span class="responsible-badge">Mode responsable actif</span><br/>'
+    : "";
 
-  resultBox.innerHTML = `Décision : <strong>${status}</strong> | Confiance : <strong>${data.confiance}%</strong> | Incertitude : <strong>${incertitude}</strong><br/>Motif de la décision : <strong>${motifDecision}</strong><br/>Score du sol : <strong>${score}/100</strong> (${niveauSol})<br/>Cultures recommandées : <strong>${recommandations}</strong><br/>Actions conseillées : <strong>${actions}</strong><br/>Raisons : <strong>${raisons}</strong><br/>Facteurs explicatifs : <strong>${explication}</strong><br/>Contexte météo : <strong>${meteo}</strong><br/>Contrôle des anomalies : <strong>${anomalies}</strong>`;
+  resultBox.innerHTML = `${badgeResponsable}Décision : <strong>${status}</strong> | Confiance : <strong>${data.confiance}%</strong> | Incertitude : <strong>${incertitude}</strong><br/>Motif de la décision : <strong>${motifDecision}</strong><br/>Avis responsable : <strong>${avisResponsable}</strong><br/>Motifs de prudence : <strong>${motifsResponsables}</strong><br/>Score du sol : <strong>${score}/100</strong> (${niveauSol})<br/>Cultures recommandées : <strong>${recommandations}</strong><br/>Actions conseillées : <strong>${actions}</strong><br/>Raisons : <strong>${raisons}</strong><br/>Facteurs explicatifs : <strong>${explication}</strong><br/>Contexte météo : <strong>${meteo}</strong><br/>Contrôle des anomalies : <strong>${anomalies}</strong>`;
   if (!data.est_favorable) {
     resultBox.classList.add("bad");
   }

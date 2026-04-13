@@ -35,6 +35,14 @@ body {
   box-shadow: 0 10px 30px rgba(27, 67, 50, 0.15);
 }
 
+.responsible-note {
+  margin: 10px 0 16px;
+  padding: 10px 12px;
+  border-left: 4px solid #2d6a4f;
+  background: #f3fbf7;
+  font-size: 0.92rem;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -97,6 +105,17 @@ a {
 .result.bad {
   background: #ffe5e5;
   color: var(--danger);
+}
+
+.responsible-badge {
+  display: inline-block;
+  margin: 6px 0;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #fff3cd;
+  color: #7a4f01;
+  font-weight: 700;
+  font-size: 0.82rem;
 }
 
 .hidden {
