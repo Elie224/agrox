@@ -305,6 +305,14 @@ function renderHistory() {
 async function loadDashboard() {
   const response = await fetch("/dashboard/stats");
   const data = await response.json();
+  const monitoring = data.monitoring || {};
+  const driftLevel = corrigerTexteFrancais(monitoring.drift_level || "faible");
+  const driftClass =
+    monitoring.drift_level === "eleve"
+      ? "drift-high"
+      : monitoring.drift_level === "moyen"
+        ? "drift-medium"
+        : "drift-low";
 
   dashboardSummary.innerHTML = `
     <div><strong>Total des analyses:</strong> ${data.total_analyses}</div>
@@ -312,6 +320,11 @@ async function loadDashboard() {
     <div><strong>Confiance moyenne:</strong> ${data.confiance_moyenne}%</div>
     <div><strong>Nombre de feedbacks:</strong> ${data.nombre_feedbacks}</div>
     <div><strong>Précision terrain :</strong> ${data.precision_terrain}%</div>
+    <div><strong>Anomalies récentes :</strong> ${monitoring.anomaly_rate_recent || 0}%</div>
+    <div><strong>Taux "À vérifier" (récent) :</strong> ${monitoring.a_verifier_rate_recent || 0}%</div>
+    <div><strong>Confiance récente :</strong> ${monitoring.confidence_recent || 0}%</div>
+    <div><strong>Indice de drift :</strong> ${monitoring.drift_index || 0} (<span class="${driftClass}">${driftLevel}</span>)</div>
+    <div class="monitoring-message"><strong>Monitoring:</strong> ${corrigerTexteFrancais(monitoring.monitoring_message || "-")}</div>
   `;
 
   renderTrendChart(data.tendance_7_jours || []);

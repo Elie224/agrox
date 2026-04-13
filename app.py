@@ -203,6 +203,103 @@ def fetch_history(limit=100):
     return history
 
 
+def _safe_float(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _mean(values):
+    if not values:
+        return 0.0
+    return sum(values) / len(values)
+
+
+def _std(values):
+    if len(values) < 2:
+        return 0.0
+    mu = _mean(values)
+    var = sum((x - mu) ** 2 for x in values) / len(values)
+    return var ** 0.5
+
+
+def compute_monitoring_stats(rows):
+    if not rows:
+        return {
+            "anomaly_rate_recent": 0.0,
+            "a_verifier_rate_recent": 0.0,
+            "confidence_recent": 0.0,
+            "drift_index": 0.0,
+            "drift_level": "faible",
+            "monitoring_message": "Aucune analyse recente disponible pour le monitoring.",
+        }
+
+    latest_rows = rows[:60]
+    recent = latest_rows[:30]
+    baseline = latest_rows[30:60]
+
+    anomaly_count = 0
+    a_verifier_count = 0
+    confidence_values = []
+
+    numeric_fields = ["ph", "humidity", "temperature", "nitrogen", "phosphorus", "potassium", "rainfall"]
+    recent_by_field = {field: [] for field in numeric_fields}
+    baseline_by_field = {field: [] for field in numeric_fields}
+
+    for row in recent:
+        input_data = json.loads(row["input_data"])
+        anomalies = detect_input_anomalies(input_data)
+        if anomalies:
+            anomaly_count += 1
+        if row["prediction"] == "a_verifier":
+            a_verifier_count += 1
+        confidence_values.append(float(row["confidence"]))
+        for field in numeric_fields:
+            v = _safe_float(input_data.get(field))
+            if v is not None:
+                recent_by_field[field].append(v)
+
+    for row in baseline:
+        input_data = json.loads(row["input_data"])
+        for field in numeric_fields:
+            v = _safe_float(input_data.get(field))
+            if v is not None:
+                baseline_by_field[field].append(v)
+
+    drift_components = []
+    if baseline:
+        for field in numeric_fields:
+            recent_vals = recent_by_field[field]
+            base_vals = baseline_by_field[field]
+            if not recent_vals or not base_vals:
+                continue
+            delta = abs(_mean(recent_vals) - _mean(base_vals))
+            scale = _std(base_vals) + 1e-6
+            drift_components.append(delta / scale)
+
+    drift_index = _mean(drift_components)
+    if drift_index >= 0.75:
+        drift_level = "eleve"
+        monitoring_message = "Drift eleve detecte: verifier les donnees terrain et envisager un reentrainement."
+    elif drift_index >= 0.35:
+        drift_level = "moyen"
+        monitoring_message = "Drift modere detecte: surveiller les prochains lots d'analyses."
+    else:
+        drift_level = "faible"
+        monitoring_message = "Systeme stable: pas de drift significatif detecte."
+
+    total_recent = len(recent) or 1
+    return {
+        "anomaly_rate_recent": round(anomaly_count / total_recent * 100.0, 2),
+        "a_verifier_rate_recent": round(a_verifier_count / total_recent * 100.0, 2),
+        "confidence_recent": round(_mean(confidence_values), 2),
+        "drift_index": round(drift_index, 3),
+        "drift_level": drift_level,
+        "monitoring_message": monitoring_message,
+    }
+
+
 def compute_dashboard_stats():
     conn = get_db_connection()
     rows = conn.execute(
@@ -220,6 +317,7 @@ def compute_dashboard_stats():
             "precision_terrain": 0.0,
             "repartition_par_type_sol": [],
             "tendance_7_jours": [],
+            "monitoring": compute_monitoring_stats([]),
         }
 
     favorable_count = 0
@@ -284,6 +382,7 @@ def compute_dashboard_stats():
         "precision_terrain": round(precision_terrain, 2),
         "repartition_par_type_sol": repartition,
         "tendance_7_jours": trend,
+        "monitoring": compute_monitoring_stats(rows),
     }
 
 

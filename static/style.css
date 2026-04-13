@@ -184,6 +184,28 @@ a {
   font-size: 0.88rem;
 }
 
+.drift-low {
+  color: #127a3f;
+  font-weight: 700;
+}
+
+.drift-medium {
+  color: #9b6400;
+  font-weight: 700;
+}
+
+.drift-high {
+  color: #b31924;
+  font-weight: 700;
+}
+
+.monitoring-message {
+  grid-column: 1 / -1;
+  padding: 8px 10px;
+  border-left: 4px solid #2d6a4f;
+  background: #f6fbf8;
+}
+
 .result.bad {
   background: #ffe5e5;
   color: var(--danger);
