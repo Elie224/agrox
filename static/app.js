@@ -218,14 +218,16 @@ function renderResult(data, isError = false) {
         <div><strong>Incertitude:</strong> ${incertitude}</div>
       </div>
     </div>
+    <div class="priority-block">
+      <div><strong>État du sol :</strong> ${niveauSol}</div>
+      <div><strong>Alerte principale :</strong> ${alertePrincipale} (gravité: <strong>${graviteProbleme}</strong>)</div>
+      <div><strong>Action prioritaire :</strong> ${prochainGeste}</div>
+    </div>
     <div class="result-summary"><strong>Conclusion:</strong> ${conclusion}</div>
-    <div class="result-summary"><strong>Prochain geste conseillé:</strong> ${prochainGeste}</div>
     <div class="result-summary"><strong>Motif de la décision:</strong> ${motifDecision}</div>
-    <div class="result-summary"><strong>Alerte principale:</strong> ${alertePrincipale} (gravité: <strong>${graviteProbleme}</strong>)</div>
     <div class="result-summary"><strong>Avis responsable:</strong> ${avisResponsable}</div>
     <div class="result-summary"><strong>Motifs de prudence:</strong> ${motifsResponsables}</div>
     <div class="result-details-grid">
-      <div><strong>Niveau du sol:</strong> ${niveauSol}</div>
       <div><strong>Cultures recommandées:</strong> ${recommandations}</div>
       <div><strong>Actions conseillées:</strong> ${actions}</div>
       <div><strong>Raisons:</strong> ${raisons}</div>
@@ -251,7 +253,7 @@ function formatWeatherContext(context) {
 
   const source = context.source_meteo || "inconnue";
   const pluie = context.future_rainfall !== undefined
-    ? `${Number(context.future_rainfall).toFixed(2)} mm/an (projeté)`
+    ? `${Number(context.future_rainfall).toFixed(2)} mm (prévision)`
     : "-";
   const temp = context.temperature_forecast !== undefined
     ? `${Number(context.temperature_forecast).toFixed(2)} °C`

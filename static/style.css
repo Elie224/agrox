@@ -169,6 +169,16 @@ a {
   margin: 6px 0;
 }
 
+.priority-block {
+  margin: 8px 0 10px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #f5fbf8;
+  border: 1px solid #d8ebe1;
+  display: grid;
+  gap: 6px;
+}
+
 .result-details-grid {
   margin-top: 10px;
   display: grid;
