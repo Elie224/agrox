@@ -191,8 +191,14 @@ function renderResult(data, isError = false) {
 
   let conclusion = "Sol à risque: amélioration nécessaire avant culture intensive.";
   const stressHydrique = raisons.toLowerCase().includes("stress hydrique");
+  const excesHydrique =
+    raisons.toLowerCase().includes("excès d'eau")
+    || raisons.toLowerCase().includes("exces d'eau")
+    || raisons.toLowerCase().includes("engorgement");
   if (data.prediction === "favorable" && !modeResponsable) {
-    if (stressHydrique) {
+    if (excesHydrique) {
+      conclusion = "Sol très favorable à l'agriculture, mais un risque d'excès d'eau est détecté. Un drainage est recommandé.";
+    } else if (stressHydrique) {
       conclusion = "Sol très favorable à l'agriculture, mais un stress hydrique est probable. Une stratégie d'irrigation est recommandée.";
     } else if ((data.niveau_sol || "") === "tres_bon_avec_amelioration" || (data.niveau_sol || "") === "tres_bon_avec_ajustements") {
       conclusion = "Sol très favorable, avec une amélioration recommandée pour optimiser le rendement.";

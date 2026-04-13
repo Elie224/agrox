@@ -28,6 +28,25 @@ def suggest_recovery_crops():
     ]
 
 
+def analyze_hydric_context(data):
+    humidity = float(data["humidity"])
+    rainfall = float(data["rainfall"])
+    future_rainfall = float(data.get("future_rainfall", rainfall))
+    soil_type = str(data.get("soil_type", ""))
+    soil_profile = str(data.get("soil_profile", ""))
+
+    rain_context = (rainfall + future_rainfall) / 2.0
+    is_heavy_soil = soil_type == "clay" or soil_profile in {"hydromorphe", "argilo_sableux", "argilo_limoneux"}
+
+    if (humidity >= 78 and rain_context >= 1200) or (is_heavy_soil and humidity >= 70 and rain_context >= 900):
+        return "exces", "Excès d'eau / risque d'engorgement"
+
+    if (humidity <= 35 and rain_context <= 900) or (humidity <= 45 and rain_context <= 550):
+        return "deficit", "Stress hydrique probable"
+
+    return "equilibre", ""
+
+
 def rule_based_actions(data, prediction):
     actions = []
     reasons = []
@@ -36,8 +55,6 @@ def rule_based_actions(data, prediction):
     nitrogen = float(data["nitrogen"])
     phosphorus = float(data["phosphorus"])
     potassium = float(data["potassium"])
-    humidity = float(data["humidity"])
-    rainfall = float(data["rainfall"])
     soil_profile = str(data.get("soil_profile", ""))
 
     if soil_profile == "hydromorphe":
@@ -77,13 +94,13 @@ def rule_based_actions(data, prediction):
         actions.append("Réduire le potassium et vérifier la salinité du sol")
         reasons.append("Potassium trop élevé")
 
-    if humidity < 30 or rainfall < 500:
+    hydric_state, hydric_reason = analyze_hydric_context(data)
+    if hydric_state == "deficit":
         actions.append("Mettre en place une stratégie d'irrigation")
-        reasons.append("Stress hydrique probable")
-
-    if humidity > 85:
-        actions.append("Améliorer le drainage pour éviter l'asphyxie racinaire")
-        reasons.append("Humidité trop élevée")
+        reasons.append(hydric_reason)
+    elif hydric_state == "exces":
+        actions.append("Améliorer le drainage du sol et limiter l'irrigation")
+        reasons.append(hydric_reason)
 
     if prediction == "non_favorable" and "Prédiction ML : non favorable" not in reasons:
         reasons.append("Prédiction ML : non favorable")
@@ -172,7 +189,9 @@ def assess_issue_severity(reasons):
     for reason in reasons:
         text = str(reason).lower()
         sev = "faible"
-        if "stress hydrique" in text:
+        if "stress hydrique" in text or "deficit hydrique" in text:
+            sev = "modere"
+        if "exces d'eau" in text or "engorgement" in text:
             sev = "modere"
         if "trop eleve" in text or "desequilibre" in text or "salinite" in text:
             sev = "important"
