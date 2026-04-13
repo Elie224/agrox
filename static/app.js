@@ -110,6 +110,16 @@ function renderResult(data, isError = false) {
   } else if (data.prediction === "a_verifier") {
     status = "À vérifier";
   }
+
+  const score = data.score_sol !== undefined ? Number(data.score_sol) : null;
+  const scoreAffiche = score !== null && Number.isFinite(score) ? Math.round(score) : "-";
+  let scoreClasse = "score-low";
+  if (score !== null && score >= 70) {
+    scoreClasse = "score-high";
+  } else if (score !== null && score >= 45) {
+    scoreClasse = "score-medium";
+  }
+
   const recommandations = Array.isArray(data.recommandations_culture)
     ? data.recommandations_culture.map((item) => corrigerTexteFrancais(item)).join(", ")
     : "Aucune";
@@ -120,7 +130,6 @@ function renderResult(data, isError = false) {
     ? data.raisons_principales.map((item) => corrigerTexteFrancais(item)).join(", ")
     : "-";
   const incertitude = libelleIncertitude(data.niveau_incertitude);
-  const score = data.score_sol !== undefined ? data.score_sol : "-";
   const niveauSol = data.niveau_sol || "-";
   const anomalies = Array.isArray(data.anomalies) && data.anomalies.length > 0
     ? data.anomalies.map((item) => corrigerTexteFrancais(item)).join(" | ")
@@ -141,7 +150,48 @@ function renderResult(data, isError = false) {
     ? '<span class="responsible-badge">Mode responsable actif</span><br/>'
     : "";
 
-  resultBox.innerHTML = `${badgeResponsable}Décision : <strong>${status}</strong> | Confiance : <strong>${data.confiance}%</strong> | Incertitude : <strong>${incertitude}</strong><br/>Motif de la décision : <strong>${motifDecision}</strong><br/>Avis responsable : <strong>${avisResponsable}</strong><br/>Motifs de prudence : <strong>${motifsResponsables}</strong><br/>Score du sol : <strong>${score}/100</strong> (${niveauSol})<br/>Cultures recommandées : <strong>${recommandations}</strong><br/>Actions conseillées : <strong>${actions}</strong><br/>Raisons : <strong>${raisons}</strong><br/>Facteurs explicatifs : <strong>${explication}</strong><br/>Contexte météo : <strong>${meteo}</strong><br/>Contrôle des anomalies : <strong>${anomalies}</strong>`;
+  let conclusion = "Sol à risque: amélioration nécessaire avant culture intensive.";
+  if (data.prediction === "favorable" && !modeResponsable) {
+    conclusion = "Sol exploitable: vous pouvez démarrer, avec suivi des nutriments.";
+  } else if (data.prediction === "a_verifier" || modeResponsable) {
+    conclusion = "Sol à valider: confirmation terrain recommandée avant décision finale.";
+  } else if (data.prediction === "non_favorable") {
+    conclusion = "Sol non favorable actuellement: plan correctif conseillé avant semis.";
+  }
+
+  const prochainGeste = Array.isArray(data.actions_recommandees) && data.actions_recommandees.length > 0
+    ? corrigerTexteFrancais(data.actions_recommandees[0])
+    : "Réaliser une vérification terrain complémentaire";
+
+  resultBox.innerHTML = `
+    ${badgeResponsable}
+    <div class="result-hero">
+      <div class="decision-chip ${data.prediction === "favorable" && !modeResponsable ? "ok" : "warn"}">${status}</div>
+      <div class="score-kpi ${scoreClasse}">
+        <div class="score-value">${scoreAffiche}</div>
+        <div class="score-label">Score du sol / 100</div>
+      </div>
+      <div class="confidence-kpi">
+        <div><strong>Confiance:</strong> ${data.confiance}%</div>
+        <div><strong>Incertitude:</strong> ${incertitude}</div>
+      </div>
+    </div>
+    <div class="result-summary"><strong>Conclusion:</strong> ${conclusion}</div>
+    <div class="result-summary"><strong>Prochain geste conseillé:</strong> ${prochainGeste}</div>
+    <div class="result-summary"><strong>Motif de la décision:</strong> ${motifDecision}</div>
+    <div class="result-summary"><strong>Avis responsable:</strong> ${avisResponsable}</div>
+    <div class="result-summary"><strong>Motifs de prudence:</strong> ${motifsResponsables}</div>
+    <div class="result-details-grid">
+      <div><strong>Niveau du sol:</strong> ${niveauSol}</div>
+      <div><strong>Cultures recommandées:</strong> ${recommandations}</div>
+      <div><strong>Actions conseillées:</strong> ${actions}</div>
+      <div><strong>Raisons:</strong> ${raisons}</div>
+      <div><strong>Facteurs explicatifs:</strong> ${explication}</div>
+      <div><strong>Contexte météo:</strong> ${meteo}</div>
+      <div><strong>Contrôle des anomalies:</strong> ${anomalies}</div>
+    </div>
+    <div class="feedback-note">Votre retour terrain améliore AgroX: utilisez le feedback pour renforcer la précision réelle.</div>
+  `;
   if (!data.est_favorable) {
     resultBox.classList.add("bad");
   }
