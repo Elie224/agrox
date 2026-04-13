@@ -127,6 +127,17 @@ def build_decision_support(prediction, confidence, data):
         soil_score = min(soil_score, 74.0)
     soil_level = classify_soil_score(soil_score)
 
+    # Un sol "excellent" ne doit pas masquer une carence explicite.
+    lower_reasons = [str(reason).lower() for reason in reasons]
+    has_deficiency = any(
+        keyword in reason
+        for reason in lower_reasons
+        for keyword in ["faible", "insuffisant", "carence"]
+    )
+    if has_deficiency and soil_level == "excellent":
+        soil_level = "tres_bon_avec_amelioration"
+        soil_score = min(soil_score, 92.0)
+
     return {
         "cultures_recommandees": cultures,
         "actions_recommandees": actions,
@@ -213,6 +224,21 @@ def compute_soil_score(data, prediction, confidence):
     if k > 140:
         base_score -= 14.0
 
+    # Penalites de carences pour aligner le score avec les recommandations terrain.
+    if n < 40:
+        base_score -= 8.0
+    if p < 40:
+        base_score -= 10.0
+    if k < 40:
+        base_score -= 8.0
+
+    if n < 25:
+        base_score -= 8.0
+    if p < 25:
+        base_score -= 10.0
+    if k < 25:
+        base_score -= 8.0
+
     if soil_profile == "hydromorphe":
         base_score -= 28.0
     elif soil_profile == "salin":
@@ -220,7 +246,9 @@ def compute_soil_score(data, prediction, confidence):
     elif soil_profile == "calcaire":
         base_score -= 10.0
 
-    if prediction == "favorable":
+    has_nutrient_deficit = (n < 40) or (p < 40) or (k < 40)
+
+    if prediction == "favorable" and not has_nutrient_deficit:
         base_score += 3.0
     else:
         base_score -= 3.0

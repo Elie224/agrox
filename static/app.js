@@ -95,6 +95,35 @@ function traduireFacteur(facteur) {
   return map[facteur] || facteur;
 }
 
+function niveauSolLisible(niveau) {
+  const map = {
+    excellent: "excellent",
+    tres_bon_avec_amelioration: "très bon avec amélioration possible",
+    bon: "bon",
+    moyen: "moyen",
+    faible: "faible",
+    critique: "critique",
+  };
+  return map[niveau] || corrigerTexteFrancais(niveau || "-");
+}
+
+function facteurLisible(facteur) {
+  const map = {
+    "pluviométrie": "🌧️ Pluie",
+    pluie_future: "🌦️ Pluie future",
+    humidité: "💧 Humidité",
+    température: "🌡️ Température",
+    température_prévue: "🌡️ Température prévue",
+    indice_fertilité: "🌱 Fertilité",
+    facteur_climatique: "☁️ Climat",
+    azote: "🧪 Azote",
+    phosphore: "🧪 Phosphore",
+    potassium: "🧪 Potassium",
+    pH: "🧪 pH",
+  };
+  return map[facteur] || facteur;
+}
+
 function renderResult(data, isError = false) {
   resultBox.classList.remove("hidden", "bad");
 
@@ -130,13 +159,16 @@ function renderResult(data, isError = false) {
     ? data.raisons_principales.map((item) => corrigerTexteFrancais(item)).join(", ")
     : "-";
   const incertitude = libelleIncertitude(data.niveau_incertitude);
-  const niveauSol = data.niveau_sol || "-";
+  const niveauSol = niveauSolLisible(data.niveau_sol || "-");
   const anomalies = Array.isArray(data.anomalies) && data.anomalies.length > 0
     ? data.anomalies.map((item) => corrigerTexteFrancais(item)).join(" | ")
     : "Aucune anomalie détectée";
   const explication = Array.isArray(data.explication_locale)
     ? data.explication_locale
-      .map((item) => `${traduireFacteur(item.facteur)} (${item.influence})`)
+      .map((item) => {
+        const libelle = facteurLisible(traduireFacteur(item.facteur));
+        return `${libelle} (${item.influence}%)`;
+      })
       .join(", ")
     : "-";
   const meteo = formatWeatherContext(data.contexte_meteo);
@@ -152,7 +184,11 @@ function renderResult(data, isError = false) {
 
   let conclusion = "Sol à risque: amélioration nécessaire avant culture intensive.";
   if (data.prediction === "favorable" && !modeResponsable) {
-    conclusion = "Sol exploitable: vous pouvez démarrer, avec suivi des nutriments.";
+    if ((data.niveau_sol || "") === "tres_bon_avec_amelioration") {
+      conclusion = "Sol très favorable, avec une amélioration recommandée pour optimiser le rendement.";
+    } else {
+      conclusion = "Sol exploitable: vous pouvez démarrer, avec suivi des nutriments.";
+    }
   } else if (data.prediction === "a_verifier" || modeResponsable) {
     conclusion = "Sol à valider: confirmation terrain recommandée avant décision finale.";
   } else if (data.prediction === "non_favorable") {
