@@ -25,7 +25,8 @@ from xgboost import XGBClassifier
 from ml_utils import enrich_features, normalize_soil_profile, normalize_soil_type
 
 
-DATA_PATH = Path("data") / "soil_fertility.csv"
+DEFAULT_REAL_DATA_PATH = Path("data") / "soil_fertility_real.csv"
+FALLBACK_DATA_PATH = Path("data") / "soil_fertility.csv"
 MODEL_PATH = Path("model") / "soil_model.joblib"
 METRICS_PATH = Path("model") / "metrics.json"
 FEATURES_PATH = Path("model") / "feature_importance.json"
@@ -47,15 +48,36 @@ RANDOM_SEARCH_SPACE = {
 
 
 FAST_TRAIN_MODE = os.getenv("AGROX_FAST_TRAIN", "0").strip().lower() in {"1", "true", "yes", "on"}
+REQUIRE_REAL_DATA = os.getenv("AGROX_REQUIRE_REAL_DATA", "0").strip().lower() in {"1", "true", "yes", "on"}
 
 
-def load_data():
-    if not DATA_PATH.exists():
+def resolve_data_path():
+    custom_path = (os.getenv("AGROX_DATA_PATH") or "").strip()
+    if custom_path:
+        candidate = Path(custom_path)
+        if candidate.exists():
+            return candidate, False
+        raise FileNotFoundError(f"AGROX_DATA_PATH introuvable: {candidate}")
+
+    if DEFAULT_REAL_DATA_PATH.exists():
+        return DEFAULT_REAL_DATA_PATH, False
+
+    if REQUIRE_REAL_DATA:
         raise FileNotFoundError(
-            f"Missing dataset at {DATA_PATH}. Run generate_sample_data.py or place your dataset there."
+            "Données réelles requises, mais aucun fichier trouvé. "
+            "Ajoutez data/soil_fertility_real.csv ou définissez AGROX_DATA_PATH."
         )
 
-    with DATA_PATH.open("r", encoding="utf-8") as csvfile:
+    return FALLBACK_DATA_PATH, True
+
+
+def load_data(data_path):
+    if not data_path.exists():
+        raise FileNotFoundError(
+            f"Missing dataset at {data_path}."
+        )
+
+    with data_path.open("r", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         rows = list(reader)
 
@@ -234,7 +256,12 @@ def save_feature_importance(best_pipeline):
 
 
 def main():
-    X, y, sample_weights = load_data()
+    data_path, is_fallback = resolve_data_path()
+    print(f"Dataset utilise: {data_path}")
+    if is_fallback:
+        print("AVERTISSEMENT: fallback vers un dataset non reel. Fournissez des donnees terrain pour la production.")
+
+    X, y, sample_weights = load_data(data_path)
     label_to_int = {"non_favorable": 0, "favorable": 1}
     y_encoded = [label_to_int[item] for item in y]
 

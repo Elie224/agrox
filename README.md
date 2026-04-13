@@ -76,6 +76,30 @@ python generate_sample_data.py
 python train_model.py
 ```
 
+### Travailler avec des donnees reelles (recommande)
+
+1. Placez votre dataset terrain dans `data/soil_fertility_real.csv`.
+2. Lancez un controle qualite:
+
+```bash
+python real_data_quality_check.py
+```
+
+3. Entrainement force sur donnees reelles:
+
+```bash
+set AGROX_REQUIRE_REAL_DATA=1
+python train_model.py
+```
+
+Option alternative avec chemin personnalise:
+
+```bash
+set AGROX_DATA_PATH=C:\chemin\vers\mon_dataset.csv
+set AGROX_REQUIRE_REAL_DATA=1
+python train_model.py
+```
+
 5. Lancer l'application web:
 
 ```bash

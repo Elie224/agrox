@@ -1,0 +1,29 @@
+{
+  "dataset_path": "data\\soil_fertility.csv",
+  "row_count": 1210,
+  "missing_columns": [],
+  "missing_values": {
+    "ph": 0,
+    "nitrogen": 0,
+    "humidity": 0,
+    "phosphorus": 0,
+    "soil_type": 0,
+    "rainfall": 0,
+    "temperature": 0,
+    "label": 0,
+    "potassium": 0
+  },
+  "invalid_numeric_rows": 0,
+  "range_issue_rows": 0,
+  "label_distribution": {
+    "non_favorable": 725,
+    "favorable": 485
+  },
+  "quality_flags": {
+    "enough_rows": true,
+    "balanced_labels": true,
+    "low_missing_values": true,
+    "low_invalid_numeric": true,
+    "low_range_issues": true
+  }
+}
