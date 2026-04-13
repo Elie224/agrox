@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+.git/
+.gitignore
+.vscode/
+data/*.db
+data/*export*
+model/*.joblib

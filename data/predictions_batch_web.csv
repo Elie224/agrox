@@ -1,0 +1,2 @@
+ph,humidity,temperature,nitrogen,phosphorus,potassium,rainfall,soil_type,prediction_modele,prediction,confiance,est_favorable,recommandations_culture,actions_recommandees,niveau_incertitude,score_sol,niveau_sol,donnees_suspectes,anomalies,statut,erreur
+6.5,65,28,90,60,170,900,sableux,favorable,non_favorable,69.0,False,"Mucuna (engrais vert), Dolique (legumineuse), Jachere amelioree",Reduire le potassium et verifier la salinite du sol,moyenne,54.0,faible,False,,ok,

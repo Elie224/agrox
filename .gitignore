@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local DB/runtime files
+data/*.db
+data/*export*
+
+# Binary model artifacts (rebuilt during Docker build)
+model/*.joblib

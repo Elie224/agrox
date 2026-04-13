@@ -1,0 +1,32 @@
+{
+  "npk": {
+    "k_severe_high": 140.0,
+    "n_severe_high": 150.0,
+    "p_severe_low": 10.84,
+    "k_pair_high": 120.0
+  },
+  "confidence": {
+    "favorable_min": 70.0,
+    "non_favorable_uncertain_max": 55.0
+  },
+  "metadata": {
+    "source_rows_total": 1210,
+    "source_rows_csv": 1210,
+    "source_rows_feedback": 0,
+    "evaluation": {
+      "precision_non_favorable": 0.7257,
+      "recall_non_favorable": 0.1131,
+      "f1_non_favorable": 0.1957,
+      "score": 0.572523649679585,
+      "tp": 82,
+      "fp": 31,
+      "fn": 643
+    },
+    "npk_calibres_bruts": {
+      "k_severe_high": 113.73,
+      "n_severe_high": 115.11,
+      "p_severe_low": 10.84,
+      "k_pair_high": 106.41
+    }
+  }
+}

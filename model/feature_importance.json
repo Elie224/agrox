@@ -1,0 +1,118 @@
+[
+  {
+    "feature": "ph",
+    "importance": 0.09888947755098343
+  },
+  {
+    "feature": "humidity",
+    "importance": 0.08670501410961151
+  },
+  {
+    "feature": "climate_factor",
+    "importance": 0.07686055451631546
+  },
+  {
+    "feature": "temperature_forecast",
+    "importance": 0.0746375098824501
+  },
+  {
+    "feature": "temperature",
+    "importance": 0.0689840316772461
+  },
+  {
+    "feature": "soil_type=clay",
+    "importance": 0.053385794162750244
+  },
+  {
+    "feature": "soil_profile=sandy",
+    "importance": 0.04984103888273239
+  },
+  {
+    "feature": "soil_type=loam",
+    "importance": 0.048974085599184036
+  },
+  {
+    "feature": "soil_profile=clay",
+    "importance": 0.04849114641547203
+  },
+  {
+    "feature": "fertility_index",
+    "importance": 0.04534406587481499
+  },
+  {
+    "feature": "soil_profile=loam",
+    "importance": 0.045200880616903305
+  },
+  {
+    "feature": "soil_type=sandy",
+    "importance": 0.0444825105369091
+  },
+  {
+    "feature": "future_rainfall",
+    "importance": 0.04177393019199371
+  },
+  {
+    "feature": "soil_profile=silty",
+    "importance": 0.03893093019723892
+  },
+  {
+    "feature": "soil_type=silty",
+    "importance": 0.03405990079045296
+  },
+  {
+    "feature": "rainfall",
+    "importance": 0.03248751163482666
+  },
+  {
+    "feature": "potassium",
+    "importance": 0.02938726730644703
+  },
+  {
+    "feature": "pk_ratio",
+    "importance": 0.023528466001152992
+  },
+  {
+    "feature": "phosphorus",
+    "importance": 0.020117569714784622
+  },
+  {
+    "feature": "np_ratio",
+    "importance": 0.01930483803153038
+  },
+  {
+    "feature": "nitrogen",
+    "importance": 0.018613547086715698
+  },
+  {
+    "feature": "calcareous_risk",
+    "importance": 0.0
+  },
+  {
+    "feature": "organic_soil",
+    "importance": 0.0
+  },
+  {
+    "feature": "rainfall_ratio_forecast",
+    "importance": 0.0
+  },
+  {
+    "feature": "salinity_risk",
+    "importance": 0.0
+  },
+  {
+    "feature": "soil_profile=hydromorphe",
+    "importance": 0.0
+  },
+  {
+    "feature": "soil_profile=salin",
+    "importance": 0.0
+  },
+  {
+    "feature": "temperature_delta_forecast",
+    "importance": 0.0
+  },
+  {
+    "feature": "waterlogging_risk",
+    "importance": 0.0
+  }
+]

@@ -1,0 +1,36 @@
+{
+  "resultats": [
+    {
+      "modele": "RandomForest",
+      "accuracy_test": 0.8416666666666667,
+      "precision_weighted_test": 0.8409623374388474,
+      "recall_weighted_test": 0.8416666666666667,
+      "f1_weighted_test": 0.840766783250753,
+      "f1_weighted_cv_mean": 0.8271071342146978
+    },
+    {
+      "modele": "DecisionTree",
+      "accuracy_test": 0.7708333333333334,
+      "precision_weighted_test": 0.7731866297243535,
+      "recall_weighted_test": 0.7708333333333334,
+      "f1_weighted_test": 0.7716734622102207,
+      "f1_weighted_cv_mean": 0.7654698781233712
+    },
+    {
+      "modele": "LogisticRegression",
+      "accuracy_test": 0.5958333333333333,
+      "precision_weighted_test": 0.6105174731182795,
+      "recall_weighted_test": 0.5958333333333333,
+      "f1_weighted_test": 0.5994790842432874,
+      "f1_weighted_cv_mean": 0.5990645243983695
+    }
+  ],
+  "meilleur_modele": {
+    "modele": "RandomForest",
+    "accuracy_test": 0.8416666666666667,
+    "precision_weighted_test": 0.8409623374388474,
+    "recall_weighted_test": 0.8416666666666667,
+    "f1_weighted_test": 0.840766783250753,
+    "f1_weighted_cv_mean": 0.8271071342146978
+  }
+}
