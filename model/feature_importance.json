@@ -1,87 +1,87 @@
 [
   {
     "feature": "ph",
-    "importance": 0.09454379975795746
+    "importance": 0.09350939095020294
   },
   {
     "feature": "humidity",
-    "importance": 0.08298793435096741
+    "importance": 0.08765369653701782
   },
   {
     "feature": "climate_factor",
-    "importance": 0.07931024581193924
+    "importance": 0.08618071675300598
   },
   {
     "feature": "temperature_forecast",
-    "importance": 0.06842022389173508
+    "importance": 0.08224532753229141
   },
   {
     "feature": "temperature",
-    "importance": 0.06488562375307083
-  },
-  {
-    "feature": "soil_profile=clay",
-    "importance": 0.06149308755993843
-  },
-  {
-    "feature": "soil_type=sandy",
-    "importance": 0.057212378829717636
-  },
-  {
-    "feature": "soil_type=clay",
-    "importance": 0.05686429888010025
-  },
-  {
-    "feature": "soil_profile=sandy",
-    "importance": 0.05296618118882179
-  },
-  {
-    "feature": "soil_type=loam",
-    "importance": 0.051219239830970764
+    "importance": 0.07993999868631363
   },
   {
     "feature": "fertility_index",
-    "importance": 0.04523427411913872
-  },
-  {
-    "feature": "soil_profile=silty",
-    "importance": 0.03964946046471596
+    "importance": 0.057280488312244415
   },
   {
     "feature": "future_rainfall",
-    "importance": 0.03747498244047165
+    "importance": 0.05005572736263275
+  },
+  {
+    "feature": "soil_type=sandy",
+    "importance": 0.04937847703695297
   },
   {
     "feature": "soil_profile=loam",
-    "importance": 0.035521216690540314
-  },
-  {
-    "feature": "soil_type=silty",
-    "importance": 0.031253959983587265
-  },
-  {
-    "feature": "potassium",
-    "importance": 0.028917547315359116
+    "importance": 0.048264723271131516
   },
   {
     "feature": "rainfall",
-    "importance": 0.02772282250225544
+    "importance": 0.04271415248513222
   },
   {
-    "feature": "phosphorus",
-    "importance": 0.02375502698123455
+    "feature": "soil_profile=clay",
+    "importance": 0.042410943657159805
+  },
+  {
+    "feature": "soil_type=clay",
+    "importance": 0.04043547809123993
+  },
+  {
+    "feature": "soil_profile=sandy",
+    "importance": 0.035115595906972885
+  },
+  {
+    "feature": "soil_profile=silty",
+    "importance": 0.03440405800938606
+  },
+  {
+    "feature": "soil_type=loam",
+    "importance": 0.030662013217806816
+  },
+  {
+    "feature": "soil_type=silty",
+    "importance": 0.029126685112714767
+  },
+  {
+    "feature": "potassium",
+    "importance": 0.025820663198828697
   },
   {
     "feature": "pk_ratio",
-    "importance": 0.023655638098716736
+    "importance": 0.02498173527419567
+  },
+  {
+    "feature": "phosphorus",
+    "importance": 0.024386724457144737
   },
   {
     "feature": "np_ratio",
-    "importance": 0.018591182306408882
+    "importance": 0.018386609852313995
   },
   {
     "feature": "nitrogen",
-    "importance": 0.018320953473448753
+    "importance": 0.0170467346906662
   },
   {
     "feature": "calcareous_risk",
@@ -97,10 +97,6 @@
   },
   {
     "feature": "salinity_risk",
-    "importance": 0.0
-  },
-  {
-    "feature": "soil_profile=hydromorphe",
     "importance": 0.0
   },
   {

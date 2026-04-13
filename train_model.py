@@ -6,6 +6,7 @@ from datetime import datetime, UTC
 
 import joblib
 from sklearn.calibration import CalibratedClassifierCV
+from sklearn.frozen import FrozenEstimator
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -246,11 +247,21 @@ def main():
         stratify=y_encoded,
     )
 
-    search = train_with_tuning(X_train, y_train, sw_train)
-    pipeline = search.best_estimator_
+    X_fit, X_calib, y_fit, y_calib, sw_fit, _sw_calib = train_test_split(
+        X_train,
+        y_train,
+        sw_train,
+        test_size=0.2,
+        random_state=42,
+        stratify=y_train,
+    )
 
-    calibrator = CalibratedClassifierCV(estimator=pipeline, method="sigmoid", cv=3)
-    calibrator.fit(X_train, y_train, sample_weight=sw_train)
+    search = train_with_tuning(X_fit, y_fit, sw_fit)
+    pipeline = search.best_estimator_
+    pipeline.fit(X_fit, y_fit, classifier__sample_weight=sw_fit)
+
+    calibrator = CalibratedClassifierCV(estimator=FrozenEstimator(pipeline), method="sigmoid")
+    calibrator.fit(X_calib, y_calib)
 
     y_pred = calibrator.predict(X_test)
     metrics = build_metrics(y_test, y_pred, search)
