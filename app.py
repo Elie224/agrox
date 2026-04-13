@@ -469,6 +469,59 @@ def apply_responsible_mode(prediction_affichage, decision_finale, support, confi
     }
 
 
+def has_critical_anomaly(anomalies):
+    if not anomalies:
+        return False
+    critical_tokens = [
+        "suspecte",
+        "anormalement",
+        "incoherence",
+        "hors plage",
+    ]
+    for item in anomalies:
+        text = str(item).lower()
+        if any(token in text for token in critical_tokens):
+            return True
+    return False
+
+
+def apply_score_reliability_policy(support, anomalies):
+    if not has_critical_anomaly(anomalies):
+        return {
+            "score_fiable": True,
+            "score_message": "Score interpretable.",
+        }
+
+    support["soil_score"] = None
+    support["soil_level"] = "non_fiable"
+    support["gravite_probleme"] = "critique"
+    support["alerte_principale"] = "Donnees incoherentes detectees"
+    return {
+        "score_fiable": False,
+        "score_message": "Score non fiable (donnees incoherentes detectees).",
+    }
+
+
+def sanitize_explanations_for_anomalies(explanations, anomalies):
+    if not has_critical_anomaly(anomalies):
+        return explanations
+
+    blocked_factors = set()
+    anomaly_text = " ".join(str(item).lower() for item in anomalies)
+    if "pluviometrie" in anomaly_text or "pluie" in anomaly_text:
+        blocked_factors.update({"rainfall", "future_rainfall", "rainfall_ratio_forecast"})
+    if "humidite" in anomaly_text:
+        blocked_factors.add("humidity")
+    if "temperature" in anomaly_text:
+        blocked_factors.update({"temperature", "temperature_forecast", "temperature_delta_forecast"})
+
+    if not blocked_factors:
+        return explanations
+
+    sanitized = [item for item in explanations if str(item.get("facteur")) not in blocked_factors]
+    return sanitized
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -587,6 +640,8 @@ def predict():
         confiance_decision,
         anomalies,
     )
+    score_policy = apply_score_reliability_policy(support, anomalies)
+    explain = sanitize_explanations_for_anomalies(explain, anomalies)
 
     save_history(input_data, prediction_affichage, confiance_decision)
 
@@ -605,6 +660,8 @@ def predict():
             "niveau_incertitude": support["niveau_incertitude"],
             "score_sol": support["soil_score"],
             "niveau_sol": support["soil_level"],
+            "score_fiable": score_policy["score_fiable"],
+            "message_score": score_policy["score_message"],
             "gravite_probleme": support.get("gravite_probleme"),
             "alerte_principale": support.get("alerte_principale"),
             "donnees_suspectes": len(anomalies) > 0,
@@ -679,6 +736,7 @@ def predict_batch():
             confiance_decision,
             anomalies,
         )
+        score_policy = apply_score_reliability_policy(support, anomalies)
 
         save_history(enriched_input, prediction_affichage, confiance_decision)
 
@@ -693,6 +751,8 @@ def predict_batch():
                 "niveau_incertitude": support["niveau_incertitude"],
                 "score_sol": support["soil_score"],
                 "niveau_sol": support["soil_level"],
+                "score_fiable": score_policy["score_fiable"],
+                "message_score": score_policy["score_message"],
                 "gravite_probleme": support.get("gravite_probleme"),
                 "alerte_principale": support.get("alerte_principale"),
                 "donnees_suspectes": len(anomalies) > 0,

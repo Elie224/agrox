@@ -142,9 +142,13 @@ function renderResult(data, isError = false) {
   }
 
   const score = data.score_sol !== undefined ? Number(data.score_sol) : null;
-  const scoreAffiche = score !== null && Number.isFinite(score) ? Math.round(score) : "-";
+  const scoreFiable = data.score_fiable !== false;
+  const messageScore = corrigerTexteFrancais(data.message_score || "Score interpretable.");
+  const scoreAffiche = scoreFiable && score !== null && Number.isFinite(score) ? Math.round(score) : "Non fiable";
   let scoreClasse = "score-low";
-  if (score !== null && score >= 70) {
+  if (!scoreFiable) {
+    scoreClasse = "score-unreliable";
+  } else if (score !== null && score >= 70) {
     scoreClasse = "score-high";
   } else if (score !== null && score >= 45) {
     scoreClasse = "score-medium";
@@ -224,6 +228,7 @@ function renderResult(data, isError = false) {
       <div><strong>Action prioritaire :</strong> ${prochainGeste}</div>
     </div>
     <div class="result-summary"><strong>Conclusion:</strong> ${conclusion}</div>
+    <div class="result-summary"><strong>Fiabilité du score:</strong> ${messageScore}</div>
     <div class="result-summary"><strong>Motif de la décision:</strong> ${motifDecision}</div>
     <div class="result-summary"><strong>Avis responsable:</strong> ${avisResponsable}</div>
     <div class="result-summary"><strong>Motifs de prudence:</strong> ${motifsResponsables}</div>

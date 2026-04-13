@@ -161,6 +161,11 @@ a {
   color: #a21e28;
 }
 
+.score-unreliable {
+  background: #f1f3f5;
+  color: #495057;
+}
+
 .confidence-kpi {
   font-size: 0.93rem;
 }
