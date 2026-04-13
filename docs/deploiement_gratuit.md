@@ -66,3 +66,19 @@ Puis verifier:
 curl http://127.0.0.1:5001/health
 curl http://127.0.0.1:5001/ready
 ```
+
+## Workflow de mise a jour (GitHub + Hugging Face)
+
+Un script est disponible pour publier les changements sur les 2 remotes en une commande: `origin` (GitHub) et `hf` (Hugging Face).
+
+Commande:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\deploy_sync.ps1 -Message "Mise a jour AgroX"
+```
+
+Ce que fait le script:
+- verifie la synchronisation de `origin/main` et `hf/main`
+- fait un `git add -A`
+- commit si necessaire
+- push vers GitHub puis vers Hugging Face
