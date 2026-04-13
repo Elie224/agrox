@@ -236,6 +236,10 @@ def compute_final_decision(prediction, confidence, data):
     if prediction == "favorable" and severe_npk_imbalance:
         return "non_favorable", "Déséquilibre NPK sévère détecté"
 
+    borderline_triplet = (n < 30 and p < 25 and k < 40)
+    if prediction == "favorable" and borderline_triplet and soil_profile in {"argilo_sableux", "argilo_limoneux", "hydromorphe"}:
+        return "a_verifier", "Profil NPK limite sur sol lourd: verification terrain recommandee"
+
     if prediction == "favorable" and confidence < favorable_min:
         return "a_verifier", "Confiance du modèle insuffisante"
 

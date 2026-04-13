@@ -444,6 +444,17 @@ def apply_responsible_mode(prediction_affichage, decision_finale, support, confi
             "motifs": [],
         }
 
+    # Ne pas annuler une decision non favorable critique deja etablie.
+    if decision_finale == "non_favorable":
+        support["prediction_incertaine"] = True
+        if support.get("niveau_incertitude") == "faible":
+            support["niveau_incertitude"] = "moyenne"
+        return "non_favorable", "non_favorable", support, {
+            "active": True,
+            "message": "Mode prudent actif: decision non favorable maintenue, verification humaine recommandee.",
+            "motifs": motifs,
+        }
+
     support["decision_finale"] = "a_verifier"
     support["motif_decision"] = "Mode responsable active: verification humaine requise"
     support["prediction_incertaine"] = True

@@ -1,22 +1,22 @@
 {
-  "generated_at_utc": "2026-04-13T14:55:30+00:00",
+  "generated_at_utc": "2026-04-13T21:49:37+00:00",
   "model_metrics": {
     "algorithm": "XGBoostClassifier",
     "accuracy": 0.9462809917355371,
-    "balanced_accuracy": 0.9398151439744045,
-    "f1_weighted": 0.9460256686758998,
-    "f1_cv": 0.9149770343092728
+    "balanced_accuracy": 0.9466405972271597,
+    "f1_weighted": 0.9464092583500104,
+    "f1_cv": 0.8913518745408041
   },
   "test_suite": {
     "total": 10,
-    "passed": 9,
-    "pass_rate": 90.0,
+    "passed": 10,
+    "pass_rate": 100.0,
     "results": [
       {
         "nom": "Sol limono-argileux equilibre",
         "attendu": "favorable",
         "obtenu": "favorable",
-        "confiance": 97.19,
+        "confiance": 99.81,
         "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
         "ok": true
       },
@@ -24,7 +24,7 @@
         "nom": "Sol degrade sec et carence N/P",
         "attendu": "non_favorable",
         "obtenu": "non_favorable",
-        "confiance": 97.57,
+        "confiance": 97.83,
         "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
         "ok": true
       },
@@ -40,7 +40,7 @@
         "nom": "Hydromorphe",
         "attendu": "non_favorable",
         "obtenu": "non_favorable",
-        "confiance": 96.58,
+        "confiance": 74.76,
         "motif": "Sol hydromorphe : risque d'asphyxie racinaire",
         "ok": true
       },
@@ -56,7 +56,7 @@
         "nom": "Calcaire tropical",
         "attendu": "non_favorable",
         "obtenu": "non_favorable",
-        "confiance": 74.49,
+        "confiance": 90.57,
         "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
         "ok": true
       },
@@ -64,7 +64,7 @@
         "nom": "Organique humide tempere",
         "attendu": "favorable",
         "obtenu": "favorable",
-        "confiance": 97.22,
+        "confiance": 99.81,
         "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
         "ok": true
       },
@@ -72,7 +72,7 @@
         "nom": "Argilo-limoneux bien equilibre",
         "attendu": "favorable",
         "obtenu": "favorable",
-        "confiance": 97.22,
+        "confiance": 99.81,
         "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
         "ok": true
       },
@@ -80,17 +80,17 @@
         "nom": "Limono-sableux sec",
         "attendu": "non_favorable",
         "obtenu": "non_favorable",
-        "confiance": 81.32,
+        "confiance": 85.88,
         "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
         "ok": true
       },
       {
         "nom": "Argilo-sableux moyen",
         "attendu": "a_verifier",
-        "obtenu": "favorable",
-        "confiance": 89.72,
-        "motif": "D\u00e9cision align\u00e9e sur le mod\u00e8le",
-        "ok": false
+        "obtenu": "a_verifier",
+        "confiance": 69.0,
+        "motif": "Mode responsable active: verification humaine requise",
+        "ok": true
       }
     ]
   }
